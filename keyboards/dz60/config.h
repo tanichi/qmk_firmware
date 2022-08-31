@@ -16,16 +16,26 @@
  *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)
  *
  */
+
+/*
 #define MATRIX_ROW_PINS { D0, D1, D2, D3, D5 }
 #define MATRIX_COL_PINS { F0, F1, E6, C7, C6, B7, D4, B1, B0, B5, B4, D7, D6, B3, F4 }
+*/
+
+// for my PCB; DZ60 V2 Flex cut Soldered PCB
+#define MATRIX_ROW_PINS { F0, B3, F6, F4, F5}
+#define MATRIX_COL_PINS { F1, D0, D1, D2, D3, D5, D4, D6, D7, B4, F7, C7, C6, B6, B5}
+
 
 /* COL2ROW, ROW2COL*/
 #define DIODE_DIRECTION COL2ROW
 
-#define LED_CAPS_LOCK_PIN B2
+// #define LED_CAPS_LOCK_PIN B2
+#define LED_CAPS_LOCK_PIN E6
 #define LED_PIN_ON_STATE 0
 
-#define BACKLIGHT_PIN B6
+// No BackLIGHT for my PCB, un use pin B0
+#define BACKLIGHT_PIN B0
 #define BACKLIGHT_LEVELS 5
 
 #define RGB_DI_PIN E2
