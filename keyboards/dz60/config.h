@@ -32,13 +32,13 @@
 
 // #define LED_CAPS_LOCK_PIN B2
 #define LED_CAPS_LOCK_PIN E6
-#define LED_PIN_ON_STATE 0
+#define LED_PIN_ON_STATE 1
 
 // No BackLIGHT for my PCB, un use pin B0
 #define BACKLIGHT_PIN B0
 #define BACKLIGHT_LEVELS 5
 
-#define RGB_DI_PIN E2
+#define RGB_DI_PIN B2
 #ifdef RGB_DI_PIN
 #    define RGBLIGHT_ANIMATIONS
 #    define RGBLED_NUM 16
