@@ -60,8 +60,8 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &tild_key_override, NULL };
 
 //Custom Keymap Definitions
-#define KC_CAD LALT(LCTL(KC_DEL))
-#define KC_SS LGUI(LSFT(KC_S))
+#define KC_CAD LALT(LCTL(KC_DEL)) // Control-ALT-Delete
+#define KC_SS LGUI(LSFT(KC_S))    // Screen-Shot Win-Shift-S
 
 enum custom_keycodes {
    LARROW = SAFE_RANGE ,
