@@ -1,0 +1,77 @@
+name: Sample QMK Firmware Build Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      # ご自身のリポジトリをclone
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ビルドしたいkeyboard, rev, keymapを指定
+      - name: QMK Build firmware Action
+        uses: ijikeman/qmk_build@v0.0.1
+        with:
+          keyboard: 'plunck'
+          rev: 'rev1'
+          keymap: 'default'
+
+      # 複数指定可能
+      - name: QMK Build firmware Action
+        uses: ijikeman/qmk_build@v0.0.1
+        with:
+          qmk_firmware_version: 0.27.0 # v0.0.1では0.28.0がDockerimageに含まれていますが、別のバージョンでビルドしたい場合は指定します
+          keyboard: 'plunck'
+          rev: 'rev1'
+          keymap: 'original_keymap'
+
+      # 生成された.hexファイルをartifactとしてアーカイブ保存
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: ${{ github.workspace }}/output/*.hexname: Sample QMK Firmware Build Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      # ご自身のリポジトリをclone
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ビルドしたいkeyboard, rev, keymapを指定
+      - name: QMK Build firmware Action
+        uses: ijikeman/qmk_build@v0.0.1
+        with:
+          keyboard: 'plunck'
+          rev: 'rev1'
+          keymap: 'default'
+
+      # 複数指定可能
+      - name: QMK Build firmware Action
+        uses: ijikeman/qmk_build@v0.0.1
+        with:
+          qmk_firmware_version: 0.27.0 # v0.0.1では0.28.0がDockerimageに含まれていますが、別のバージョンでビルドしたい場合は指定します
+          keyboard: 'plunck'
+          rev: 'rev1'
+          keymap: 'original_keymap'
+
+      # 生成された.hexファイルをartifactとしてアーカイブ保存
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: ${{ github.workspace }}/output/*.hex
