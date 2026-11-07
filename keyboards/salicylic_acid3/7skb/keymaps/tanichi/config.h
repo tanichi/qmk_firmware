@@ -20,3 +20,10 @@
 
 #define TAPPING_FORCE_HOLD
 #define TAPPING_TERM 180
+
+/*
+ * OS detection: apply the detected OS only once (when it becomes stable).
+ * Some Macs re-report the OS minutes after startup; without this, a manual
+ * Win/Mac switch (FN + bottom-right) could be overwritten later.
+ */
+#define OS_DETECTION_SINGLE_REPORT
