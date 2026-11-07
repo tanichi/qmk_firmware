@@ -62,6 +62,14 @@ const key_override_t *key_overrides[] = {
 //Custom Keymap Definitions
 #define KC_CAD LALT(LCTL(KC_DEL)) // Control-ALT-Delete
 #define KC_SS LGUI(LSFT(KC_S))    // Screen-Shot Win-Shift-S
+#define KC_MAC_SS LGUI(LCTL(LSFT(KC_4)))  // Mac Screen-Shot Cmd-Ctrl-Shift-4 (selection to clipboard)
+
+// Bottom-left key: hold = FN layer, tap = screenshot.
+// LT() can only tap a basic keycode (modifiers are dropped), so the tap is
+// replaced with the real shortcut in process_record_user().
+// KC_S / KC_4 below are placeholders and are never sent.
+#define WIN_SS_FN LT(WIN_FN, KC_S)
+#define MAC_SS_FN LT(MAC_FN, KC_4)
 
 enum custom_keycodes {
    LARROW = SAFE_RANGE ,
@@ -70,6 +78,18 @@ enum custom_keycodes {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch(keycode){
+        case WIN_SS_FN:
+            if (record->tap.count && record->event.pressed) {
+                tap_code16(KC_SS);      // tapped: send Win+Shift+S instead of the placeholder
+                return false;
+            }
+            break;                      // held: let QMK handle the layer switch
+        case MAC_SS_FN:
+            if (record->tap.count && record->event.pressed) {
+                tap_code16(KC_MAC_SS);  // tapped: send Cmd+Ctrl+Shift+4 instead of the placeholder
+                return false;
+            }
+            break;                      // held: let QMK handle the layer switch
         case LARROW:
             if(record->event.pressed){
                 //pressed
@@ -108,7 +128,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_LSFT      ,   KC_Z ,   KC_X ,   KC_C ,   KC_V ,   KC_B ,   KC_N ,   KC_M, KC_COMM , KC_DOT, KC_SLSH,  KC_NO,KC_RSFT  , MO(WIN_FN),
     //|------------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+----------------+--------|
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
-    LT(WIN_FN,KC_SS),  KC_LGUI ,  KC_LALT ,          KC_SPC        ,  KC_ENT  ,         KC_F19     , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
+       WIN_SS_FN ,  KC_LGUI ,  KC_LALT ,          KC_SPC        ,  KC_ENT  ,         KC_F19     , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
     ),
 
@@ -144,7 +164,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
              KC_LSFT     ,   KC_Z ,   KC_X ,   KC_C ,   KC_V ,   KC_B ,   KC_N ,   KC_M , KC_COMM, KC_DOT , KC_SLSH, KC_NO, KC_RSFT ,MO(MAC_FN),
     //|------------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+----------------+--------|
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
-          MAC_FN ,  KC_LALT ,  KC_LGUI ,         KC_SPC         ,  KC_ENT  ,     LGUI(KC_SPC)   , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
+       MAC_SS_FN ,  KC_LALT ,  KC_LGUI ,         KC_SPC         ,  KC_ENT  ,     LGUI(KC_SPC)   , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
     ),
     
