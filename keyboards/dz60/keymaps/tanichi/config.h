@@ -32,3 +32,9 @@
  * Win/Mac switch (FN + bottom-right) could be overwritten later.
  */
 #define OS_DETECTION_SINGLE_REPORT
+
+/*
+ * Layer Lock: unlock automatically after 60 seconds without key presses.
+ * dz60 has no indicator for the lock state, so this avoids staying locked by mistake.
+ */
+#define LAYER_LOCK_IDLE_TIMEOUT 60000
