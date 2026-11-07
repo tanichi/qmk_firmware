@@ -13,14 +13,20 @@ extern uint8_t is_master;
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
+// Layer structure is the same as dz60:tanichi (WIN_* / MAC_*), plus the 7skb-only ADJUST layer.
+// Switch between Win and Mac with FN + bottom-right key (DF).
 enum layer_number {
-  _QWERTY = 0,
-  _FN,
-  _ADJUST,
+  WIN_QWERTY = 0,
+  WIN_FN,
+  MAC_QWERTY,
+  MAC_FN,
+  ADJUST,
 };
 
 enum custom_keycodes {
-  RGB_RST = SAFE_RANGE
+  RGB_RST = SAFE_RANGE,
+  LARROW,   // types "<-" (same as dz60)
+  RARROW    // types "->" (same as dz60)
 };
 
 // ---- JIS conversion (same as dz60:tanichi) --------------------------------
@@ -62,7 +68,8 @@ const key_override_t *key_overrides[] = {
 // ---------------------------------------------------------------------------
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_QWERTY] = LAYOUT(
+  // Windows base: GUI, Alt order / F19 = Zenkaku-Hankaku (via JIS conversion)
+  [WIN_QWERTY] = LAYOUT(
   //,-----------------------------------------------------|   |--------------------------------------------------------------------------------.
        KC_ESC,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,        KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS,  KC_EQL, KC_BSLS,  KC_GRV,
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------+--------|
@@ -70,29 +77,62 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------|
       KC_LCTL,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,        KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,  KC_ENT,
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
-      KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT, MO(_FN),
+      KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT, MO(WIN_FN),
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
-               KC_LALT, KC_LGUI,  KC_SPC,  KC_SPC,               KC_ENT,  KC_F19,          KC_RGUI, KC_RALT 
+               KC_LGUI, KC_LALT,  KC_SPC,  KC_SPC,               KC_ENT,  KC_F19,           LARROW,  RARROW 
           //`---------------------------------------------|   |--------------------------------------------'
   ),
 
-  [_FN] = LAYOUT(
+  // FN (same as dz60): left = numpad, right = arrows / Home / End / Del / BS
+  [WIN_FN] = LAYOUT(
   //,-----------------------------------------------------|   |--------------------------------------------------------------------------------.
-  TG(_ADJUST),   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,       KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12,  KC_INS,  KC_DEL,
+   TG(ADJUST),   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,       KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12,   KC_NO,  KC_INS,
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------+--------|
-      _______, _______, _______, _______, _______, _______,     _______, _______, KC_PSCR, KC_SCRL,KC_PAUSE,   KC_UP, _______, KC_BSPC,
+        KC_NO,   KC_NO,    KC_7,    KC_8,    KC_9,   KC_NO,      KC_DEL, KC_HOME,   KC_UP,  KC_END,   KC_NO,   KC_UP,   KC_NO,  KC_DEL,
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------|
-      _______, _______, _______, _______, _______, _______,     _______, _______, KC_HOME, KC_PGUP, KC_LEFT,KC_RIGHT, _______,
+      KC_CAPS,   KC_NO,    KC_4,    KC_5,    KC_6,   KC_NO,     KC_BSPC, KC_LEFT, KC_RGHT,   KC_NO, KC_LEFT, KC_RGHT,TG(ADJUST),
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
-      _______, _______, _______, _______, _______, _______,     _______, _______,  KC_END, KC_PGDN, KC_DOWN, _______, _______,
+      _______,    KC_0,    KC_1,    KC_2,    KC_3,   KC_NO,       KC_NO, KC_DOWN, _______, _______, KC_DOWN,   KC_NO, _______,
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
-               _______, _______, _______, _______,              _______, _______,          KC_STOP, OVR_TGL
+               _______, _______,   KC_NO,   KC_NO,              _______,   KC_NO,          OVR_TGL, DF(MAC_QWERTY)
           //`---------------------------------------------|   |--------------------------------------------'
   ),
 
-  [_ADJUST] = LAYOUT( /* Base */
+  // Mac base: Alt(Option), GUI(Command) order / IME switch = Cmd+Space at the F19 position
+  [MAC_QWERTY] = LAYOUT(
   //,-----------------------------------------------------|   |--------------------------------------------------------------------------------.
-  TG(_ADJUST), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,   QK_BOOT,
+       KC_ESC,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,        KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS,  KC_EQL, KC_BSLS,  KC_GRV,
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------+--------|
+       KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,        KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_LBRC, KC_RBRC,KC_BSPC,
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------|
+      KC_LCTL,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,        KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,  KC_ENT,
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
+      KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT, MO(MAC_FN),
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
+               KC_LALT, KC_LGUI,  KC_SPC,  KC_SPC,               KC_ENT,LGUI(KC_SPC),       LARROW,  RARROW
+          //`---------------------------------------------|   |--------------------------------------------'
+  ),
+
+  // Mac FN: same as WIN_FN except the bottom-right key switches back to Windows.
+  // (dz60's MAC_FN has no OVR_TGL; 7skb has it here too so the JIS conversion can be toggled on Mac.)
+  [MAC_FN] = LAYOUT(
+  //,-----------------------------------------------------|   |--------------------------------------------------------------------------------.
+   TG(ADJUST),   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,       KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12,   KC_NO,  KC_INS,
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------+--------|
+        KC_NO,   KC_NO,    KC_7,    KC_8,    KC_9,   KC_NO,      KC_DEL, KC_HOME,   KC_UP,  KC_END,   KC_NO,   KC_UP,   KC_NO,  KC_DEL,
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------|
+      KC_CAPS,   KC_NO,    KC_4,    KC_5,    KC_6,   KC_NO,     KC_BSPC, KC_LEFT, KC_RGHT,   KC_NO, KC_LEFT, KC_RGHT,TG(ADJUST),
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
+      _______,    KC_0,    KC_1,    KC_2,    KC_3,   KC_NO,       KC_NO, KC_DOWN, _______, _______, KC_DOWN,   KC_NO, _______,
+  //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
+               _______, _______,   KC_NO,   KC_NO,              _______,   KC_NO,          OVR_TGL, DF(WIN_QWERTY)
+          //`---------------------------------------------|   |--------------------------------------------'
+  ),
+
+  // 7skb only: LED settings / QK_BOOT (unchanged)
+  [ADJUST] = LAYOUT(
+  //,-----------------------------------------------------|   |--------------------------------------------------------------------------------.
+   TG(ADJUST), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,   QK_BOOT,
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------+--------|
       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     RGB_RST, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------+--------|
@@ -110,10 +150,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 layer_state_t layer_state_set_user(layer_state_t state) {
 #ifdef RGBLIGHT_ENABLE
     switch (get_highest_layer(state)) {
-    case _FN:
+    case WIN_FN:
+    case MAC_FN:
       rgblight_sethsv_at(HSV_BLUE, 0);
       break;
-    case _ADJUST:
+    case ADJUST:
       rgblight_sethsv_at(HSV_PURPLE, 0);
       break;
     default: //  for any other layers, or the default layer
@@ -129,6 +170,16 @@ int RGB_current_mode;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   bool result = false;
   switch (keycode) {
+    case LARROW:
+        if (record->event.pressed) {
+          SEND_STRING("<-");
+        }
+      break;
+    case RARROW:
+        if (record->event.pressed) {
+          SEND_STRING("->");
+        }
+      break;
     #ifdef RGBLIGHT_ENABLE
       case UG_NEXT:
           if (record->event.pressed) {
