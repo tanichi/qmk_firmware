@@ -16,10 +16,16 @@
 
 #pragma once
 
-/* Select hand configuration */
-
-#define TAPPING_FORCE_HOLD
-#define TAPPING_TERM 180
+/*
+ * Tap-hold settings: use the QMK defaults (TAPPING_TERM 200 ms), same as dz60.
+ * (Removed TAPPING_FORCE_HOLD / TAPPING_TERM 180 copied from the default keymap:
+ *  TAPPING_FORCE_HOLD no longer exists in QMK, and 180 ms would make the thumb
+ *  Enter/FN key feel different from dz60.)
+ *
+ * Flow Tap: a tap-hold key pressed within 150 ms after a typing key is always a tap.
+ * Applied only to the thumb Enter/FN key (see get_flow_tap_term() in keymap.c).
+ */
+#define FLOW_TAP_TERM 150
 
 /*
  * OS detection: apply the detected OS only once (when it becomes stable).

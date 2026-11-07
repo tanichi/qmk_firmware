@@ -67,6 +67,12 @@ const key_override_t *key_overrides[] = {
     &tild_key_override };
 // ---------------------------------------------------------------------------
 
+// Thumb Enter (right half, innermost): hold = FN layer, tap = Enter (same as dz60).
+// Space stays a plain key so games get no input delay.
+// Flow Tap is enabled for these keys only (see get_flow_tap_term()).
+#define WIN_ENT_FN LT(WIN_FN, KC_ENT)
+#define MAC_ENT_FN LT(MAC_FN, KC_ENT)
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Windows base: GUI, Alt order / F19 = Zenkaku-Hankaku (via JIS conversion)
   [WIN_QWERTY] = LAYOUT(
@@ -79,7 +85,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT, MO(WIN_FN),
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
-               KC_LGUI, KC_LALT,  KC_SPC,  KC_SPC,               KC_ENT,  KC_F19,           LARROW,  RARROW 
+               KC_LGUI, KC_LALT,  KC_SPC,  KC_SPC,           WIN_ENT_FN,  KC_F19,           LARROW,  RARROW 
           //`---------------------------------------------|   |--------------------------------------------'
   ),
 
@@ -109,7 +115,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT, MO(MAC_FN),
   //|--------+--------+--------+--------+--------+--------|   |--------+--------+--------+--------+--------+--------+--------|
-               KC_LALT, KC_LGUI,  KC_SPC,  KC_SPC,               KC_ENT,LGUI(KC_SPC),       LARROW,  RARROW
+               KC_LALT, KC_LGUI,  KC_SPC,  KC_SPC,           MAC_ENT_FN,LGUI(KC_SPC),       LARROW,  RARROW
           //`---------------------------------------------|   |--------------------------------------------'
   ),
 
@@ -188,6 +194,21 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
             break;
     }
     return true;
+}
+
+// Flow Tap (FLOW_TAP_TERM in config.h), enabled only for the thumb Enter/FN key (same as dz60).
+// When it is pressed within FLOW_TAP_TERM ms after a letter / punctuation / space key,
+// it is always a tap (Enter), so it never turns into FN while typing.
+uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t *record, uint16_t prev_keycode) {
+    switch (keycode) {
+        case WIN_ENT_FN:
+        case MAC_ENT_FN:
+            if (is_flow_tap_key(prev_keycode)) {
+                return FLOW_TAP_TERM;
+            }
+            break;
+    }
+    return 0;  // Flow Tap disabled for all other tap-hold keys
 }
 
 int RGB_current_mode;
