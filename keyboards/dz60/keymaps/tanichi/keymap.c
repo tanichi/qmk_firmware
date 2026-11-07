@@ -71,6 +71,12 @@ const key_override_t *key_overrides[] = {
 #define WIN_SS_FN LT(WIN_FN, KC_S)
 #define MAC_SS_FN LT(MAC_FN, KC_4)
 
+// Thumb Enter (between Space and F19): hold = FN layer, tap = Enter.
+// Space stays a plain key so games get no input delay (Space-FN was removed for that reason).
+// Flow Tap is enabled for these keys only (see get_flow_tap_term()).
+#define WIN_ENT_FN LT(WIN_FN, KC_ENT)
+#define MAC_ENT_FN LT(MAC_FN, KC_ENT)
+
 enum custom_keycodes {
    LARROW = SAFE_RANGE ,
    RARROW
@@ -97,6 +103,23 @@ bool process_detected_host_os_user(os_variant_t detected_os) {
             break;
     }
     return true;
+}
+
+// Flow Tap (FLOW_TAP_TERM in config.h), enabled only for the thumb Enter/FN key.
+// When it is pressed within FLOW_TAP_TERM ms after a letter / punctuation / space key,
+// it is always a tap (Enter), so it never turns into FN while typing.
+// The bottom-left FN/screenshot key is excluded on purpose: its placeholder tap key (KC_S)
+// would make "letter -> bottom-left" take a screenshot instead of switching to FN.
+uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t *record, uint16_t prev_keycode) {
+    switch (keycode) {
+        case WIN_ENT_FN:
+        case MAC_ENT_FN:
+            if (is_flow_tap_key(prev_keycode)) {
+                return FLOW_TAP_TERM;
+            }
+            break;
+    }
+    return 0;  // Flow Tap disabled for all other tap-hold keys
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -151,7 +174,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_LSFT      ,   KC_Z ,   KC_X ,   KC_C ,   KC_V ,   KC_B ,   KC_N ,   KC_M, KC_COMM , KC_DOT, KC_SLSH,  KC_NO,KC_RSFT  , MO(WIN_FN),
     //|------------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+----------------+--------|
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
-       WIN_SS_FN ,  KC_LGUI ,  KC_LALT ,          KC_SPC        ,  KC_ENT  ,         KC_F19     , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
+       WIN_SS_FN ,  KC_LGUI ,  KC_LALT ,          KC_SPC        ,WIN_ENT_FN,         KC_F19     , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
     ),
 
@@ -187,7 +210,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
              KC_LSFT     ,   KC_Z ,   KC_X ,   KC_C ,   KC_V ,   KC_B ,   KC_N ,   KC_M , KC_COMM, KC_DOT , KC_SLSH, KC_NO, KC_RSFT ,MO(MAC_FN),
     //|------------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+----------------+--------|
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
-       MAC_SS_FN ,  KC_LALT ,  KC_LGUI ,         KC_SPC         ,  KC_ENT  ,     LGUI(KC_SPC)   , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
+       MAC_SS_FN ,  KC_LALT ,  KC_LGUI ,         KC_SPC         ,MAC_ENT_FN,     LGUI(KC_SPC)   , LARROW , RARROW ,  KC_NO ,  KC_NO , KC_NO
     //|----------+----------+----------+------------------------+----------+--------------------+--------+--------+--------+--------+--------|
     ),
     

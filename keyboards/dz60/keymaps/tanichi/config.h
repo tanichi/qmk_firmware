@@ -38,3 +38,9 @@
  * dz60 has no indicator for the lock state, so this avoids staying locked by mistake.
  */
 #define LAYER_LOCK_IDLE_TIMEOUT 60000
+
+/*
+ * Flow Tap: a tap-hold key pressed within 150 ms after a typing key is always a tap.
+ * Applied only to the thumb Enter/FN key (see get_flow_tap_term() in keymap.c).
+ */
+#define FLOW_TAP_TERM 150
