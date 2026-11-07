@@ -76,6 +76,29 @@ enum custom_keycodes {
    RARROW
 };
 
+// OS detection: called once the host OS has been detected (see OS_DETECTION_SINGLE_REPORT in config.h).
+//   Windows      -> Win layer, JIS conversion ON  (the PC is set to the JIS layout)
+//   macOS / iOS  -> Mac layer, JIS conversion OFF (the Mac is set to the US layout)
+//   Linux/unsure -> leave as is
+// Neither change is saved to EEPROM; it is detected again on every connection.
+// The manual switch (FN + bottom-right, OVR_TGL) still works afterwards.
+bool process_detected_host_os_user(os_variant_t detected_os) {
+    switch (detected_os) {
+        case OS_WINDOWS:
+            set_single_default_layer(WIN_QWERTY);
+            key_override_on();
+            break;
+        case OS_MACOS:
+        case OS_IOS:
+            set_single_default_layer(MAC_QWERTY);
+            key_override_off();
+            break;
+        default:
+            break;
+    }
+    return true;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch(keycode){
         case WIN_SS_FN:
